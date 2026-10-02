@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教師專業發展與研習活動網</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        edu: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            800: '#1e3a8a',
+                            900: '#0f172a',
+                        },
+                        amberBtn: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px -8px rgba(30, 58, 138, 0.15);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pt-36 md:pt-32">
+
+    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-sm z-40 border-b border-slate-100">
+        <!-- 頂部主標題區域 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- 品牌標誌與名稱 -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-edu-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-edu-500/20">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-800 leading-tight">教師專業成長研習網</h1>
+                        <p class="text-xs text-slate-500">Educator Professional Development Portal</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <!-- 搜尋框 -->
+                    <div class="relative hidden sm:block w-40 lg:w-60">
+                        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="搜尋研習主題或講師..." 
+                               class="w-full pl-9 pr-4 py-1.5 text-xs lg:text-sm bg-slate-100 border border-transparent rounded-full focus:bg-white focus:border-edu-500 focus:outline-none transition">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+                    </div>
+
+                    <!-- 新增研習按鈕 -->
+                    <button onclick="openAddModal()" class="px-3 py-1.5 bg-edu-600 hover:bg-edu-700 text-white text-xs md:text-sm font-medium rounded-lg shadow-sm transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>新增研習</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分頁導航分類 Bar -->
+        <div class="bg-slate-50 border-t border-slate-200/60 shadow-inner">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex space-x-1 md:space-x-2 overflow-x-auto py-2 scrollbar-none" id="tabContainer">
+                    <button onclick="switchTab('all')" data-tab="all" class="tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition bg-edu-600 text-white shadow-sm">
+                        <i class="fa-solid fa-list-ul mr-1.5"></i>所有場次
+                    </button>
+                    <button onclick="switchTab('online')" data-tab="online" class="tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition text-slate-600 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-laptop-house mr-1.5"></i>線上活動
+                    </button>
+                    <button onclick="switchTab('offline')" data-tab="offline" class="tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition text-slate-600 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-users-rectangle mr-1.5"></i>實體活動
+                    </button>
+                    <button onclick="switchTab('low')" data-tab="low" class="tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition text-slate-600 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-child-reaching mr-1.5"></i>低年級
+                    </button>
+                    <button onclick="switchTab('mid')" data-tab="mid" class="tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition text-slate-600 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-children mr-1.5"></i>中年級
+                    </button>
+                    <button onclick="switchTab('high')" data-tab="high" class="tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition text-slate-600 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-user-graduate mr-1.5"></i>高年級
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 my-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-200">
+            <div>
+                <h2 id="currentCategoryTitle" class="text-xl font-bold text-slate-800 flex items-center">
+                    <i class="fa-solid fa-folder-open mr-2 text-edu-600"></i>所有研習場次
+                </h2>
+                <p id="currentCategoryDesc" class="text-xs text-slate-500 mt-0.5">點擊醒目的黃色報名按鈕即可直接開啟專屬 Google 報名表單</p>
+            </div>
+            <div class="flex items-center space-x-2 text-xs text-slate-500">
+                <span>共計 <strong id="eventCount" class="text-edu-600 font-semibold">0</strong> 個研習場次</span>
+            </div>
+        </div>
+
+        <!-- 活動卡片 Grid -->
+        <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+        <!-- 無資料狀態 -->
+        <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400 text-2xl">
+                <i class="fa-regular fa-folder-open"></i>
+            </div>
+            <h3 class="text-base font-medium text-slate-700">未找到符合條件的研習活動</h3>
+            <p class="text-xs text-slate-400 mt-1">請切換其他分頁或調整搜尋關鍵字</p>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>© 2026 教師專業發展研習資訊網 | 支援 Google 表單線上快速報名與管理</p>
+        </div>
+    </footer>
+
+    <!-- Google 表單報名彈出視窗 (連結至 Google 表單) -->
+    <div id="registerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl overflow-hidden transform transition-all duration-200 scale-95 opacity-0 flex flex-col max-h-[92vh]" id="registerModalBox">
+            <!-- Modal Header -->
+            <div class="bg-slate-900 text-white p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-800">
+                <div class="pr-4 flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-edu-600 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow">
+                        <i class="fa-brands fa-google"></i>
+                    </div>
+                    <div>
+                        <span class="inline-block px-2 py-0.5 bg-edu-500/20 text-edu-300 border border-edu-500/30 rounded text-[10px] font-semibold mb-0.5">
+                            Google 表單線上報名
+                        </span>
+                        <h3 id="modalEventTitle" class="text-base sm:text-lg font-bold leading-tight">研習課程名稱</h3>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <a id="modalExternalFormBtn" href="#" target="_blank" rel="noopener noreferrer" title="在新分頁開啟表單" class="text-edu-200 hover:text-white bg-edu-600/30 hover:bg-edu-600/50 px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 border border-edu-400/30">
+                        <span>新視窗開啟 Google 表單</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+                    </a>
+                    <button onclick="closeRegisterModal()" class="text-slate-400 hover:text-white transition p-1.5 rounded-lg hover:bg-white/10">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Google Form Container -->
+            <div class="relative flex-grow bg-slate-100 min-h-[500px] sm:min-h-[600px] overflow-hidden">
+                <div id="formLoadingSpinner" class="absolute inset-0 flex flex-col items-center justify-center bg-white text-slate-600 z-10">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl text-edu-600 mb-3"></i>
+                    <span class="text-sm font-medium text-slate-700">正在連結載入 Google 報名表單...</span>
+                    <p class="text-xs text-slate-400 mt-1">若載入時間較長，可點選右上角「新視窗開啟」進行填寫</p>
+                </div>
+                <iframe id="googleFormIframe" src="" class="w-full h-full min-h-[500px] sm:min-h-[600px] border-0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理者專區 Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 md:p-6">
+        <div class="bg-white rounded-2xl w-full max-w-5xl h-[85vh] shadow-2xl flex flex-col overflow-hidden">
+            <div class="bg-slate-900 text-white p-4 md:p-5 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-lg bg-amber-500 text-slate-900 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base md:text-lg font-bold">管理者專區 - 研習報名名冊</h3>
+                        <p class="text-xs text-slate-400">管理並檢視所有場次與報名者數據</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white transition px-2 py-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="bg-slate-50 p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                    <label class="font-semibold text-slate-700">選擇場次：</label>
+                    <select id="adminEventFilter" onchange="renderAdminRegistrations()" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-edu-500">
+                        <option value="all">全區 (所有研習活動)</option>
+                    </select>
+
+                    <input type="text" id="adminSearchInput" oninput="renderAdminRegistrations()" placeholder="搜尋姓名、學校或Email..." 
+                           class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg w-48 focus:outline-none focus:ring-1 focus:ring-edu-500">
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-500">符合條件：<strong id="adminResultCount" class="text-edu-600 font-bold">0</strong> 筆</span>
+                    <button onclick="exportRegistrationsCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition flex items-center space-x-1 shadow-sm">
+                        <i class="fa-solid fa-file-csv text-sm"></i>
+                        <span>匯出 CSV 名冊</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-grow overflow-auto p-4 bg-slate-100/50">
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
+                            <tr>
+                                <th class="p-3">#</th>
+                                <th class="p-3">報名時間</th>
+                                <th class="p-3">報名研習課程</th>
+                                <th class="p-3">報名者</th>
+                                <th class="p-3">服務學校</th>
+                                <th class="p-3">職務</th>
+                                <th class="p-3">電子郵件</th>
+                                <th class="p-3">電話</th>
+                                <th class="p-3">備註</th>
+                                <th class="p-3 text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="divide-y divide-slate-100">
+                            <!-- 動態注入表格 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white p-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+                <span>提示：點擊右上角 CSV 按鈕可下載完整報名清單。</span>
+                <button onclick="closeAdminModal()" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition font-medium">
+                    關閉視窗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增研習 Modal -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden">
+            <div class="bg-slate-800 text-white p-4 flex items-center justify-between">
+                <h3 class="text-base font-bold"><i class="fa-solid fa-calendar-plus mr-2"></i>發布新研習活動</h3>
+                <button onclick="closeAddModal()" class="text-slate-300 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="handleAddEvent(event)" class="p-6 space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">活動名稱 <span class="text-red-500">*</span></label>
+                    <input type="text" required id="newTitle" placeholder="例如：Super Fun 5 備課趴：We Are Team We Can Help 2.0" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-edu-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">活動形式</label>
+                        <select id="newMode" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg">
+                            <option value="online">線上活動</option>
+                            <option value="offline">實體活動</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">適合對象</label>
+                        <select id="newGrade" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg">
+                            <option value="high">高年級</option>
+                            <option value="mid">中年級</option>
+                            <option value="low">低年級</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">日期與時間</label>
+                        <input type="text" required id="newDate" placeholder="例如：08/19(三) 上午 09:30 - 12:30" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">主講人 / 講師</label>
+                        <input type="text" required id="newSpeaker" placeholder="例如：周儀 Vicky 老師 (宜蘭縣黎明國小)" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">報名截止日期提示</label>
+                        <input type="text" id="newDeadline" placeholder="例如：08/12(三) 23:59截止" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">主題標籤 (以逗號分隔)</label>
+                        <input type="text" id="newTags" placeholder="高年級推薦, 主題式教學" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Google 表單報名網址 <span class="text-amber-600 font-semibold">(請貼上完整的 Google Form 網址)</span></label>
+                    <input type="url" required id="newGoogleForm" placeholder="https://docs.google.com/forms/d/e/.../viewform" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">課堂帶得走技能 / 研習亮點 (一行點列一項)</label>
+                    <textarea id="newSkills" rows="3" placeholder="• 內容涵蓋 Super Fun 5 主題式教學應用&#10;• 培育單字與句型實際溝通與靈活運用" class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-300 rounded-lg"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">海報 / 活動照片</label>
+                    <input type="file" id="newImageFile" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-edu-50 file:text-edu-700 hover:file:bg-edu-100">
+                </div>
+
+                <div class="pt-3 flex justify-end space-x-2 border-t border-slate-100">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">取消</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-medium bg-edu-600 hover:bg-edu-700 text-white rounded-lg">發布研習</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast 提示訊息 -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-800 text-white px-4 py-3 rounded-xl shadow-xl flex items-center space-x-3 border border-slate-700">
+            <div id="toastIcon" class="text-emerald-400 text-lg"><i class="fa-solid fa-circle-check"></i></div>
+            <span id="toastMsg" class="text-xs md:text-sm font-medium">訊息提示</span>
+        </div>
+    </div>
+
+    <script>
+        // 初始研習活動數據 (包含參考圖中的研習主題與 Google 表單連結)
+        let events = [
+            {
+                id: 1,
+                title: "第三場：We Are Team We Can Help 2.0",
+                mode: "online",
+                grade: "high",
+                date: "08/19(三) 上午 09:30 - 12:30",
+                speaker: "周儀 Vicky 老師 (宜蘭縣黎明國小)",
+                location: "線上研習 (完成報名後發送連結)",
+                deadline: "08/12(三) 23:59截止",
+                tags: ["高年級推薦", "主題式教學", "暑期備課趴"],
+                skills: [
+                    "內容涵蓋 Super Fun 5 主題式教學應用與深度學習",
+                    "培育單字與句型實際之溝通與靈活運用",
+                    "橫向與縱向架構連結，完美扣合最新教學趨勢"
+                ],
+                desc: "結合主題式教學帶領學生深度學習，豐富備課資源讓教學更輕鬆！",
+                image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80",
+                googleFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSc_EXAMPLE_SUPER_FUN/viewform"
+            },
+            {
+                id: 2,
+                title: "低年級繪本創客與探索式引導教學",
+                mode: "offline",
+                grade: "low",
+                date: "10/18(六) 09:00 - 12:00",
+                speaker: "林美玲 老師 (知名繪本教育專家)",
+                location: "第一會議室 / 創客研習中心",
+                deadline: "10/10 額滿截止",
+                tags: ["低年級推薦", "繪本教學"],
+                skills: [
+                    "結合低年級圖像學習特點引導創造力",
+                    "配合動手做實踐跨領域素養教學",
+                    "課堂班級常規建立與遊戲化設計"
+                ],
+                desc: "引導低年級兒童想像力與口語表達，輕鬆打造高互動課堂。",
+                image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+                googleFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSc_EXAMPLE1/viewform"
+            },
+            {
+                id: 3,
+                title: "AI 生成式工具輔助中年級數學邏輯思維",
+                mode: "online",
+                grade: "mid",
+                date: "10/22(四) 13:30 - 16:30",
+                speaker: "陳建宏 教授 (數位教育研究所)",
+                location: "Google Meet 線上會議室",
+                deadline: "10/18 額滿截止",
+                tags: ["中年級推薦", "AI數位教學"],
+                skills: [
+                    "運用 AI 工具設計圖形化數學解題提示",
+                    "提升中年級學生自主學習與思考樂趣",
+                    "輕鬆生成差異化教學作業與學習單"
+                ],
+                desc: "探索科技與數學結合的無限可能，賦能教師智慧教學。",
+                image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80",
+                googleFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSc_EXAMPLE2/viewform"
+            }
+        ];
+
+        // 模擬報名資料庫
+        let registrations = [
+            {
+                id: 101,
+                eventId: 1,
+                eventTitle: "第三場：We Are Team We Can Help 2.0",
+                name: "張雅婷",
+                school: "博愛國小",
+                role: "英語專任教師",
+                email: "yt.chang@school.edu.tw",
+                phone: "0912-345678",
+                note: "已填寫 Google 表單報名",
+                timestamp: "2026/08/01 10:15"
+            }
+        ];
+
+        let currentTab = 'all';
+        let searchQuery = '';
+
+        const categoryMeta = {
+            'all': { title: '所有研習場次', desc: '顯示所有舉辦中的教師成長與專題研習課程，點擊黃色按鈕直連 Google 表單' },
+            'online': { title: '線上研習活動', desc: '便利彈性的線上同步研習，不受地域限制' },
+            'offline': { title: '實體研習活動', desc: '實體工作坊、親身體驗與深度互動討論' },
+            'low': { title: '低年級研習專區', desc: '聚焦注音、繪本、常規建立與遊戲化教學' },
+            'mid': { title: '中年級研習專區', desc: '著重邏輯引導、跨領域探究與奠基學習' },
+            'high': { title: '高年級研習專區', desc: '強調自主學習、PBL專題、思辨與備課趴' }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderEvents();
+            updateAdminBadge();
+        });
+
+        function updateAdminBadge() {
+            const badgeEl = document.getElementById('badgeRegCount');
+            if (badgeEl) {
+                badgeEl.innerText = registrations.length;
+            }
+        }
+
+        // 切換類別分頁
+        function switchTab(tabKey) {
+            currentTab = tabKey;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabKey) {
+                    btn.className = "tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition bg-edu-600 text-white shadow-sm";
+                } else {
+                    btn.className = "tab-btn px-4 py-2 text-xs md:text-sm font-medium rounded-lg whitespace-nowrap transition text-slate-600 hover:bg-slate-200/60";
+                }
+            });
+
+            const meta = categoryMeta[tabKey] || categoryMeta['all'];
+            document.getElementById('currentCategoryTitle').innerHTML = `<i class="fa-solid fa-folder-open mr-2 text-edu-600"></i>${meta.title}`;
+            document.getElementById('currentCategoryDesc').innerText = meta.desc;
+            renderEvents();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+            renderEvents();
+        }
+
+        function renderEvents() {
+            const grid = document.getElementById('eventsGrid');
+            const emptyState = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            const filtered = events.filter(item => {
+                let matchTab = (currentTab === 'all') || 
+                               (currentTab === 'online' || currentTab === 'offline' ? item.mode === currentTab : item.grade === currentTab);
+                let matchQuery = !searchQuery || 
+                                 item.title.toLowerCase().includes(searchQuery) ||
+                                 item.speaker.toLowerCase().includes(searchQuery) ||
+                                 item.desc.toLowerCase().includes(searchQuery);
+                return matchTab && matchQuery;
+            });
+
+            document.getElementById('eventCount').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(ev => {
+                const modeTag = ev.mode === 'online' 
+                    ? `<span class="bg-blue-600 text-white text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm"><i class="fa-solid fa-video mr-1"></i>線上</span>`
+                    : `<span class="bg-emerald-600 text-white text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm"><i class="fa-solid fa-location-dot mr-1"></i>實體</span>`;
+
+                // 標籤列渲染
+                const tagsHtml = (ev.tags || []).map(tag => 
+                    `<span class="inline-block bg-pink-100 text-pink-700 font-semibold text-[11px] px-2.5 py-0.5 rounded-full border border-pink-200">#${tag}</span>`
+                ).join(' ');
+
+                // 技能點列渲染 (對應圖1 💡 課堂帶得走技能)
+                const skillsHtml = (ev.skills || []).map(s => 
+                    `<li class="flex items-start"><span class="text-amber-500 mr-1.5">•</span><span>${s}</span></li>`
+                ).join('');
+
+                const deadlineText = ev.deadline ? ` (${ev.deadline})` : '';
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col card-hover relative group";
+                card.innerHTML = `
+                    <!-- 圖片海報區域 -->
+                    <div class="relative h-60 bg-slate-100 overflow-hidden">
+                        <img id="img-${ev.id}" src="${ev.image}" alt="${ev.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x450/e2e8f0/475569?text=研習活動海報'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent opacity-80"></div>
+                        
+                        <div class="absolute top-3 left-3 flex space-x-1.5">
+                            ${modeTag}
+                        </div>
+
+                        <!-- 更換圖片按鈕 -->
+                        <label class="absolute top-3 right-3 bg-white/90 hover:bg-white text-slate-700 text-xs px-2.5 py-1.5 rounded-xl shadow backdrop-blur-sm cursor-pointer transition flex items-center space-x-1 border border-slate-200">
+                            <i class="fa-solid fa-camera text-edu-600"></i>
+                            <span class="font-medium text-[11px]">更換海報</span>
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadCardImage(event, ${ev.id})">
+                        </label>
+                    </div>
+
+                    <!-- 內容資訊區 -->
+                    <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+                        <div>
+                            <!-- 標籤 Tags -->
+                            <div class="flex flex-wrap gap-1.5 mb-2.5">
+                                ${tagsHtml}
+                            </div>
+
+                            <!-- 活動標題 -->
+                            <h3 class="text-lg font-bold text-slate-900 leading-snug mb-3">
+                                ${ev.title}
+                            </h3>
+
+                            <!-- 時間與講師 -->
+                            <div class="space-y-1.5 text-xs text-slate-700 font-medium mb-4">
+                                <div class="flex items-center text-slate-800">
+                                    <i class="fa-regular fa-clock w-5 text-slate-500 text-sm"></i>
+                                    <span>${ev.date}</span>
+                                </div>
+                                <div class="flex items-center text-slate-800">
+                                    <i class="fa-solid fa-chalkboard-user w-5 text-slate-500 text-sm"></i>
+                                    <span>講師：${ev.speaker}</span>
+                                </div>
+                            </div>
+
+                            <!-- 課堂帶得走技能 (重點亮點框) -->
+                            <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 text-xs text-slate-700">
+                                <div class="font-bold text-slate-800 mb-1.5 flex items-center text-xs">
+                                    <span class="text-base mr-1">💡</span>
+                                    <span>課堂帶得走技能：</span>
+                                </div>
+                                <ul class="space-y-1 text-slate-600 leading-relaxed pl-0.5">
+                                    ${skillsHtml}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 簡約質感的 Google 表單線上報名按鈕 (與網頁主色系一致) -->
+                        <div class="pt-2">
+                            <button onclick="openRegisterModal(${ev.id})" 
+                                    class="w-full py-3 px-4 bg-edu-600 hover:bg-edu-700 active:bg-edu-800 text-white font-bold text-sm md:text-base rounded-xl shadow-md hover:shadow-lg transition transform active:scale-98 flex items-center justify-center space-x-2 border border-edu-500">
+                                <i class="fa-brands fa-google text-base"></i>
+                                <span>點我線上報名${deadlineText}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function uploadCardImage(event, eventId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newImgUrl = e.target.result;
+                    const targetEv = events.find(item => item.id === eventId);
+                    if (targetEv) targetEv.image = newImgUrl;
+                    const imgEl = document.getElementById(`img-${eventId}`);
+                    if (imgEl) imgEl.src = newImgUrl;
+                    showToast('海報圖片更新成功！', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 開啟 Google 表單報名 Modal (直連與內嵌 Google 表單)
+        function openRegisterModal(eventId) {
+            const ev = events.find(item => item.id === eventId);
+            if (!ev) return;
+
+            document.getElementById('modalEventTitle').innerText = ev.title;
+            
+            const formIframe = document.getElementById('googleFormIframe');
+            const spinner = document.getElementById('formLoadingSpinner');
+            const extBtn = document.getElementById('modalExternalFormBtn');
+
+            // 顯示 Spinner 載入動畫
+            if (spinner) spinner.style.display = 'flex';
+
+            // 綁定 iframe 載入完成隱藏 Spinner
+            formIframe.onload = hideFormSpinner;
+
+            // 處理 Google 表單連結 (自動補上 embedded=true)
+            let rawUrl = ev.googleFormUrl || "https://docs.google.com/forms/";
+            let embedUrl = rawUrl;
+            
+            if (embedUrl.includes('docs.google.com/forms') && !embedUrl.includes('embedded=true')) {
+                embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'embedded=true';
+            }
+
+            formIframe.src = embedUrl;
+            extBtn.href = rawUrl;
+
+            const modal = document.getElementById('registerModal');
+            const box = document.getElementById('registerModalBox');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function hideFormSpinner() {
+            const spinner = document.getElementById('formLoadingSpinner');
+            if (spinner) spinner.style.display = 'none';
+        }
+
+        function closeRegisterModal() {
+            const modal = document.getElementById('registerModal');
+            const box = document.getElementById('registerModalBox');
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('googleFormIframe').src = '';
+            }, 200);
+        }
+
+        function openAdminModal() {
+            populateAdminEventSelect();
+            renderAdminRegistrations();
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function populateAdminEventSelect() {
+            const select = document.getElementById('adminEventFilter');
+            select.innerHTML = '<option value="all">全區 (所有研習活動)</option>';
+            events.forEach(ev => {
+                const opt = document.createElement('option');
+                opt.value = ev.id;
+                opt.innerText = ev.title;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderAdminRegistrations() {
+            const eventFilter = document.getElementById('adminEventFilter').value;
+            const searchKeyword = document.getElementById('adminSearchInput').value.trim().toLowerCase();
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = registrations.filter(r => {
+                const matchEvent = (eventFilter === 'all') || (r.eventId.toString() === eventFilter);
+                const matchKeyword = !searchKeyword ||
+                                     r.name.toLowerCase().includes(searchKeyword) ||
+                                     r.school.toLowerCase().includes(searchKeyword) ||
+                                     r.email.toLowerCase().includes(searchKeyword) ||
+                                     r.eventTitle.toLowerCase().includes(searchKeyword);
+                return matchEvent && matchKeyword;
+            });
+
+            document.getElementById('adminResultCount').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="p-8 text-center text-slate-400">
+                            <i class="fa-regular fa-clipboard text-2xl mb-2"></i>
+                            <p>尚無符合條件的報名記錄</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3 font-mono text-slate-400">${index + 1}</td>
+                    <td class="p-3 text-slate-500 whitespace-nowrap">${item.timestamp}</td>
+                    <td class="p-3 font-medium text-slate-800 max-w-[180px] truncate" title="${item.eventTitle}">${item.eventTitle}</td>
+                    <td class="p-3 font-bold text-slate-800 whitespace-nowrap">${item.name}</td>
+                    <td class="p-3 text-slate-700 whitespace-nowrap">${item.school}</td>
+                    <td class="p-3 whitespace-nowrap"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px]">${item.role}</span></td>
+                    <td class="p-3 font-mono text-slate-600">${item.email}</td>
+                    <td class="p-3 font-mono text-slate-600 whitespace-nowrap">${item.phone}</td>
+                    <td class="p-3 text-slate-500 max-w-[120px] truncate" title="${item.note}">${item.note}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteRegistration(${item.id})" class="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition" title="刪除">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteRegistration(regId) {
+            registrations = registrations.filter(r => r.id !== regId);
+            renderAdminRegistrations();
+            renderEvents();
+            updateAdminBadge();
+            showToast('已刪除紀錄', 'info');
+        }
+
+        function exportRegistrationsCSV() {
+            if (registrations.length === 0) {
+                showToast('無報名資料可供匯出！', 'info');
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // BOM 中文支援
+            csvContent += "編號,報名時間,研習課程,報名者姓名,服務學校,職務,電子郵件,電話,備註\n";
+
+            registrations.forEach((r, idx) => {
+                const row = [
+                    idx + 1,
+                    `"${r.timestamp}"`,
+                    `"${r.eventTitle.replace(/"/g, '""')}"`,
+                    `"${r.name.replace(/"/g, '""')}"`,
+                    `"${r.school.replace(/"/g, '""')}"`,
+                    `"${r.role}"`,
+                    `"${r.email}"`,
+                    `"${r.phone}"`,
+                    `"${r.note.replace(/"/g, '""')}"`
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `研習報名名冊_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('已成功匯出報名名冊 CSV 檔！', 'success');
+        }
+
+        function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
+        function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
+
+        function handleAddEvent(e) {
+            e.preventDefault();
+            const title = document.getElementById('newTitle').value;
+            const mode = document.getElementById('newMode').value;
+            const grade = document.getElementById('newGrade').value;
+            const date = document.getElementById('newDate').value;
+            const speaker = document.getElementById('newSpeaker').value;
+            const deadline = document.getElementById('newDeadline').value || '額滿為止';
+            const tagsRaw = document.getElementById('newTags').value;
+            const googleFormUrl = document.getElementById('newGoogleForm').value.trim();
+            const skillsRaw = document.getElementById('newSkills').value;
+            const fileInput = document.getElementById('newImageFile');
+
+            const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [grade === 'high' ? '高年級推薦' : '研習特輯'];
+            const skills = skillsRaw ? skillsRaw.split('\n').map(s => s.replace(/^[•\-\*]\s*/, '').trim()).filter(Boolean) : ['研習素養提升與教學經驗分享'];
+
+            const createNewItem = (imgSrc) => {
+                const newId = events.length ? Math.max(...events.map(o => o.id)) + 1 : 1;
+                events.unshift({
+                    id: newId,
+                    title,
+                    mode,
+                    grade,
+                    date,
+                    speaker,
+                    deadline,
+                    tags,
+                    skills,
+                    location: mode === 'online' ? '線上會議' : '實體會議室',
+                    googleFormUrl,
+                    desc: title,
+                    image: imgSrc || 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80'
+                });
+                closeAddModal();
+                renderEvents();
+                populateAdminEventSelect();
+                showToast('新研習活動已成功發布！', 'success');
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) { createNewItem(evt.target.result); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                createNewItem(null);
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = message;
+            if (type === 'success') {
+                toastIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+            } else {
+                toastIcon.innerHTML = `<i class="fa-solid fa-circle-info text-blue-400"></i>`;
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
